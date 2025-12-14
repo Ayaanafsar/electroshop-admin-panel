@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../api/http";
+import api from "../api/https";
 
 export default function Dashboard() {
     const [stats, setStats] = useState({});

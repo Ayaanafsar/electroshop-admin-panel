@@ -1,4 +1,4 @@
-import api from "../api/http";
+import api from "../api/https";
 
 const login = async () => {
     const res = await api.post("/auth/login", {
