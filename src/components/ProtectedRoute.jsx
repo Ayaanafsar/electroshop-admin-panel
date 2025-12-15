@@ -1,14 +1,16 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAdminAuth } from "../context/AdminAuthContext";
 
-export default function ProtectedRoute({ children }) {
+export default function ProtectedRoute() {
     const { admin, loading } = useAdminAuth();
 
-    if (loading) return null;
+    if (loading) {
+        return <p style={{ padding: 20 }}>Loading...</p>;
+    }
 
     if (!admin) {
         return <Navigate to="/login" replace />;
     }
 
-    return children ? children : <Outlet />;
+    return <Outlet />;
 }

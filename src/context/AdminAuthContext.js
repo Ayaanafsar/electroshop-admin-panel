@@ -7,47 +7,51 @@ export const AdminAuthProvider = ({ children }) => {
     const [admin, setAdmin] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Load admin from localStorage on app start
+    // Run ONCE when app loads
     useEffect(() => {
         const token = localStorage.getItem("adminToken");
-        const adminData = localStorage.getItem("adminUser");
 
-        if (token && adminData) {
-            setAdmin(JSON.parse(adminData));
+        if (!token) {
+            setLoading(false);
+            return;
         }
 
-        setLoading(false);
+        api
+            .get("/admin/me", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            .then((res) => {
+                setAdmin(res.data);
+            })
+            .catch(() => {
+                localStorage.removeItem("adminToken");
+                setAdmin(null);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     }, []);
 
-    // Admin login
     const login = async (email, password) => {
-        const res = await api.post("/auth/login", { email, password });
-
-        if (!res.data.user.is_admin) {
-            throw new Error("Not an admin");
-        }
-
+        const res = await api.post("/admin/login", { email, password });
         localStorage.setItem("adminToken", res.data.token);
-        localStorage.setItem("adminUser", JSON.stringify(res.data.user));
-
-        setAdmin(res.data.user);
+        setAdmin(res.data.admin);
     };
 
-    // Admin logout
     const logout = () => {
         localStorage.removeItem("adminToken");
-        localStorage.removeItem("adminUser");
         setAdmin(null);
     };
 
     return (
         <AdminAuthContext.Provider
-            value={{ admin, login, logout, loading }}
+            value={{ admin, loading, login, logout }}
         >
             {children}
         </AdminAuthContext.Provider>
     );
 };
 
-// Custom hook
 export const useAdminAuth = () => useContext(AdminAuthContext);

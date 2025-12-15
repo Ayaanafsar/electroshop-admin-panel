@@ -17,19 +17,14 @@ function App() {
           {/* Public */}
           <Route path="/login" element={<Login />} />
 
-          {/* Protected */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Sidebar />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Dashboard />} />
-            <Route path="products" element={<Products />} />
-            <Route path="orders" element={<Orders />} />
-            <Route path="users" element={<Users />} />
+          {/* Protected layout */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<Sidebar />}>
+              <Route index element={<Dashboard />} />
+              <Route path="products" element={<Products />} />
+              <Route path="orders" element={<Orders />} />
+              <Route path="users" element={<Users />} />
+            </Route>
           </Route>
 
           {/* Fallback */}
